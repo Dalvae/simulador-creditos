@@ -1,6 +1,6 @@
 <template>
   <div class="font-optinaval">
-    <Form @update-data="handleUpdateData" @fetch-data="handleFetchData" />
+    <Form @update-data="handleUpdateData" @fetch-data="handleFetchData" :uf-value="ufValue"/>
     <Result v-if="monthlyDividend && requiredSalary" :monthlyDividend="monthlyDividend" :requiredSalary="requiredSalary" />
     <div v-if="credits">
       <div v-for="(bankCredits, bankName) in credits" :key="bankName">
@@ -16,7 +16,28 @@ import { ref } from 'vue';
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
 const credits = ref(null);
+const ufValue = ref(null);
 
+const { data } = await useFetch('https://mindicador.cl/api', {
+  key: 'ufValue',
+  server: true,
+  maxAge: 60 * 60 * 24, // Cada un dia
+  transform: (response) => {
+    if (response && response.uf && response.uf.valor) {
+      console.log("valor UF de hoy", response.uf.valor);
+      return response.uf.valor;
+    } else {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Fallo en fecth de uf',
+      });
+    }
+  },
+});
+
+if (data.value) {
+  ufValue.value = data.value;
+}
 const handleUpdateData = (data) => {
   monthlyDividend.value = data.monthlyDividend;
   requiredSalary.value = data.requiredSalary;
