@@ -26,12 +26,14 @@
       </div>
       <button type="submit">Calcular</button>
     </form>
+    <span>Uf de hoy {{formatCLP(ufValue)}}</span>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useFetch } from 'nuxt/app';
+import { formatCLP } from '~/utils/formatCLP';
 const config = useRuntimeConfig();
 const API = config.public.API;
 
@@ -48,6 +50,12 @@ const requiredSalary = ref(null);
 
 const emit = defineEmits(['update-data', 'fetch-data']);
 
+const props = defineProps({
+  ufValue: {
+    type: Number,
+    default: null,
+  },
+});
 // Handle form submission
 const handleSubmit = async () => {
   // Calcular el dividendo mensual
@@ -75,7 +83,8 @@ const handleSubmit = async () => {
 // TODO calcular valor de la uf una vez al dia server side. Sé hacerlo en next pero en nuxt ni idear
 
 const calculateMonthlyDividend = (propertyValue, downPayment, interestRate, term) => {
-  const loanAmount = propertyValue - downPayment;
+  if (props.ufValue) {
+  const loanAmount = (propertyValue - downPayment)* props.ufValue;;
   const numberOfMonths = term * 12; // Convertir años a meses
   const monthlyInterestRate = interestRate / 100 / 12; // Convertir interés anual a interés mensual
 
@@ -84,5 +93,7 @@ const calculateMonthlyDividend = (propertyValue, downPayment, interestRate, term
     (1 - Math.pow(1 + monthlyInterestRate, -numberOfMonths)); 
 
   return monthlyDividend;
+}
+return null;
 };
 </script>
