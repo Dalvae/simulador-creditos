@@ -4,15 +4,15 @@
     <Transition name="fade">
       <Result v-if="monthlyDividend && requiredSalary" :monthlyDividend="monthlyDividend" :requiredSalary="requiredSalary" />
     </Transition>
-    
-    <Transition name="slide">
-      <div v-if="loading" key="loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <Skeleton v-for="index in 9" :key="index" />
-      </div>
-      <div v-else key="credits" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+    <TransitionGroup name="card-transition" tag="div" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <template v-if="loading">
+        <Skeleton v-for="index in 10" :key="'skeleton-' + index" />
+      </template>
+      <template v-else>
         <Card v-for="(bankCredits, bankName) in credits" :key="bankName" :credit="getLowestCostCredit(bankCredits)" />
-      </div>
-    </Transition>
+      </template>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -99,3 +99,20 @@ const getLowestCostCredit = (bankCredits) => {
   return { ...bankCredits, formattedCostoTotal: formatCost(bankCredits.costoTotal) };
 };
 </script>
+
+<style scoped>
+.card-transition-enter-active,
+.card-transition-leave-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.card-transition-enter-from,
+.card-transition-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.card-transition-leave-active {
+  position: absolute;
+}
+</style>
