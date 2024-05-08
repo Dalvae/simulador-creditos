@@ -1,12 +1,19 @@
 <template>
   <div class="font-optinaval">
-    <Form @update-data="handleUpdateData" @fetch-data="handleFetchData" :uf-value="ufValue"/>
-    <Result v-if="monthlyDividend && requiredSalary" :monthlyDividend="monthlyDividend" :requiredSalary="requiredSalary" />
-    <div v-if="credits">
-      <div v-for="(bankCredits, bankName) in credits" :key="bankName">
-        <Card v-if="getLowestCostCredit(bankCredits)" :credit="getLowestCostCredit(bankCredits)" />
+    <Form @update-data="handleUpdateData" @fetch-data="handleFetchData" @fetch-start="handleFetchStart" :uf-value="ufValue"/>
+    
+    <Transition name="fade">
+      <Result v-if="monthlyDividend && requiredSalary" :monthlyDividend="monthlyDividend" :requiredSalary="requiredSalary" />
+    </Transition>
+
+    <Transition name="slide">
+      <div v-if="loading" key="loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <Skeleton v-for="index in 9" :key="index" />
       </div>
-    </div>
+      <div v-else-if="credits" key="credits" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <Card v-for="(bankCredits, bankName) in credits" :key="bankName" :credit="getLowestCostCredit(bankCredits)" />
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -18,6 +25,7 @@ const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
 const credits = ref(null);
 const ufValue = ref(null);
+const loading = ref(false);
 
 // Configurar metadatos y descripción de la página
 useHead({
@@ -55,8 +63,14 @@ const handleUpdateData = (data) => {
   requiredSalary.value = data.requiredSalary;
 };
 
+const handleFetchStart = () => {
+  loading.value = true;
+  credits.value = null;
+};
+
 const handleFetchData = (data) => {
   credits.value = data.credits;
+  loading.value = false;
 };
 
 //esta funcion selecciona los creditos con menor costo total de cada banco. Para ello primero tiene que dar formato numero a los respuestas de costoTotal en la api. Para hacer el regex use chatgpt. Aunque creo que es mucha overengienier -- El problema es que 

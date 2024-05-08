@@ -47,7 +47,7 @@ const dfl2 = ref('true');
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
 
-const emit = defineEmits(['update-data', 'fetch-data']);
+const emit = defineEmits(['update-data', 'fetch-data', 'fetch-start']);
 
 const props = defineProps({
   ufValue: {
@@ -69,7 +69,7 @@ const handleSubmit = async () => {
   });
 
   // Fetch data desde API, use env y usuaria un proxy para no exponerla, pero ya es publica de todos modos. Es un saludo a la bandera
-
+  emit('fetch-start');
   const credits = await $fetch(`${API}?valorPropiedad=${propertyValue.value}&Pie=${downPayment.value}&Tiempo=${term.value}&Dfl2=${dfl2.value}`);
 
   // Emitir 'fetch-data' con los datos obtenidos de la API
