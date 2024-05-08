@@ -32,7 +32,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useFetch } from 'nuxt/app';
 import { formatCLP } from '~/utils/formatCLP';
 const config = useRuntimeConfig();
 const API = config.public.API;
@@ -70,16 +69,14 @@ const handleSubmit = async () => {
   });
 
   // Fetch data desde API, use env y usuaria un proxy para no exponerla, pero ya es publica de todos modos. Es un saludo a la bandera
-  const { data: credits } = await useFetch(`${API}?valorPropiedad=${propertyValue.value}&Pie=${downPayment.value}&Tiempo=${term.value}&Dfl2=${dfl2.value}`, {
-  server: false,
-});
+
+  const credits = await $fetch(`${API}?valorPropiedad=${propertyValue.value}&Pie=${downPayment.value}&Tiempo=${term.value}&Dfl2=${dfl2.value}`);
 
   // Emitir 'fetch-data' con los datos obtenidos de la API
   emit('fetch-data', {
-    credits: credits.value,
+    credits: credits,
   });
 };
-
 // TODO calcular valor de la uf una vez al dia server side. Sé hacerlo en next pero en nuxt ni idear
 
 const calculateMonthlyDividend = (propertyValue, downPayment, interestRate, term) => {
