@@ -1,16 +1,15 @@
 <template>
   <div class="font-optinaval">
-    <Form @update-data="handleUpdateData" @fetch-data="handleFetchData" @fetch-start="handleFetchStart" :uf-value="ufValue"/>
-    
+    <Form @update-data="handleUpdateData" @submit="handleSubmit" :uf-value="ufValue" />
     <Transition name="fade">
       <Result v-if="monthlyDividend && requiredSalary" :monthlyDividend="monthlyDividend" :requiredSalary="requiredSalary" />
     </Transition>
-
+    
     <Transition name="slide">
       <div v-if="loading" key="loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <Skeleton v-for="index in 9" :key="index" />
       </div>
-      <div v-else-if="credits" key="credits" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div v-else key="credits" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <Card v-for="(bankCredits, bankName) in credits" :key="bankName" :credit="getLowestCostCredit(bankCredits)" />
       </div>
     </Transition>
@@ -20,6 +19,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useHead } from '@vueuse/head';
+const API = useRuntimeConfig().public.API;
 
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
@@ -38,6 +38,7 @@ useHead({
   ],
 });
 
+//fetch UF del Dia
 const { data } = await useFetch('https://mindicador.cl/api', {
   key: 'ufValue',
   server: true,
@@ -62,15 +63,19 @@ const handleUpdateData = (data) => {
   monthlyDividend.value = data.monthlyDividend;
   requiredSalary.value = data.requiredSalary;
 };
-
-const handleFetchStart = () => {
+//  Fetch a la api y mostrar el squeleto 
+const handleSubmit = async (formData) => {
   loading.value = true;
-  credits.value = null;
-};
+  credits.value = [];
 
-const handleFetchData = (data) => {
-  credits.value = data.credits;
-  loading.value = false;
+  try {
+    const response = await $fetch(`${API}?valorPropiedad=${formData.propertyValue}&Pie=${formData.downPayment}&Tiempo=${formData.term}&Dfl2=${formData.dfl2}`);
+    credits.value = response;
+  } catch (error) {
+    console.error('Error al obtener los datos de la API:', error);
+  } finally {
+    loading.value = false;
+  }
 };
 
 //esta funcion selecciona los creditos con menor costo total de cada banco. Para ello primero tiene que dar formato numero a los respuestas de costoTotal en la api. Para hacer el regex use chatgpt. Aunque creo que es mucha overengienier -- El problema es que 

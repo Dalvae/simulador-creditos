@@ -33,8 +33,7 @@
 <script setup>
 import { ref } from 'vue';
 import { formatCLP } from '~/utils/formatCLP';
-const config = useRuntimeConfig();
-const API = config.public.API;
+
 
 // Form input refs
 const propertyValue = ref(null);
@@ -46,8 +45,7 @@ const dfl2 = ref('true');
 // Dividendo mensual y salario requerido estas tienen ref porque son reactivas
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
-
-const emit = defineEmits(['update-data', 'fetch-data', 'fetch-start']);
+const emit = defineEmits(['update-data', 'submit']);
 
 const props = defineProps({
   ufValue: {
@@ -56,7 +54,7 @@ const props = defineProps({
   },
 });
 // Handle form submission
-const handleSubmit = async () => {
+const handleSubmit = () => {
   // Calcular el dividendo mensual
   const dividend = calculateMonthlyDividend(propertyValue.value, downPayment.value, interestRate.value, term.value);
   monthlyDividend.value = dividend;
@@ -68,16 +66,14 @@ const handleSubmit = async () => {
     requiredSalary: requiredSalary.value,
   });
 
-  // Fetch data desde API, use env y usuaria un proxy para no exponerla, pero ya es publica de todos modos. Es un saludo a la bandera
-  emit('fetch-start');
-  const credits = await $fetch(`${API}?valorPropiedad=${propertyValue.value}&Pie=${downPayment.value}&Tiempo=${term.value}&Dfl2=${dfl2.value}`);
-
-  // Emitir 'fetch-data' con los datos obtenidos de la API
-  emit('fetch-data', {
-    credits: credits,
+  // Emitir 'submit' con los datos del formulario
+  emit('submit', {
+    propertyValue: propertyValue.value,
+    downPayment: downPayment.value,
+    term: term.value,
+    dfl2: dfl2.value,
   });
 };
-// TODO calcular valor de la uf una vez al dia server side. Sé hacerlo en next pero en nuxt ni idear
 
 const calculateMonthlyDividend = (propertyValue, downPayment, interestRate, term) => {
   if (props.ufValue) {
