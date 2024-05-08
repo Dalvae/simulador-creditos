@@ -13,4 +13,5 @@ export default defineNuxtConfig({
       API: process.env.API,
     },
   },
+  // modules: ["@vueuse/head"],
 });

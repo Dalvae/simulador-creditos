@@ -12,11 +12,23 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useHead } from '@vueuse/head';
 
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
 const credits = ref(null);
 const ufValue = ref(null);
+
+// Configurar metadatos y descripción de la página
+useHead({
+  title: 'Simulador de Crédito Hipotecario',
+  meta: [
+    {
+      name: 'description',
+      content: 'Calcula tu dividendo mensual y compara opciones de crédito hipotecario.',
+    },
+  ],
+});
 
 const { data } = await useFetch('https://mindicador.cl/api', {
   key: 'ufValue',
