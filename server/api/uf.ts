@@ -23,12 +23,13 @@ const getUfValue = async () => {
   }
 };
 
-getUfValue();
-
 // Cada 24 horas
-setInterval(() => {
-  getUfValue();
-}, 24 * 60 * 60 * 1000);
+const actualizarUfDiario = async () => {
+  setInterval(() => {
+    getUfValue();
+  }, 24 * 60 * 60 * 1000);
+};
+actualizarUfDiario();
 
 export default defineEventHandler((event) => {
   if (!cachedUfValue || !cachedUpdatedAt) {
