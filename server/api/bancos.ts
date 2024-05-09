@@ -22,7 +22,7 @@ const getDataBank = async () => {
     const response = await axios.get(url);
     const banksData = response.data;
 
-    // Procesar los datos para obtener los nombres y las imágenes de los bancos
+    // Ppocesar los datos para obtener los nombres y las imágenes de los bancos
     cachedBancos = parsearBancos(banksData);
     console.log("Datos de los bancos almacenados en caché:", cachedBancos);
 
