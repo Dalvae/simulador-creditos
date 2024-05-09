@@ -34,7 +34,6 @@
 import { ref } from 'vue';
 import { formatCLP } from '~/utils/formatCLP';
 
-
 // Form input refs
 const propertyValue = ref(null);
 const downPayment = ref(null);
@@ -78,8 +77,8 @@ const handleSubmit = () => {
 const calculateMonthlyDividend = (propertyValue, downPayment, interestRate, term) => {
   if (props.ufValue) {
   const loanAmount = (propertyValue - downPayment)* props.ufValue;;
-  const numberOfMonths = term * 12; // Convertir años a meses
-  const monthlyInterestRate = interestRate / 100 / 12; // Convertir interés anual a interés mensual
+  const numberOfMonths = term * 12; 
+  const monthlyInterestRate = interestRate / 100 / 12; 
 
   const monthlyDividend = //este codigo espero que sea asi. 
     (loanAmount * monthlyInterestRate) /
