@@ -36,13 +36,13 @@ useHead({
 });
 
 // Obtener el valor de la UF del día desde el servidor
-const { data } = await useFetch('/uf/');
+const { data } = await useFetch('/proxy/uf/');
 if (data.value && !data.value.error) {
   ufValue.value = data.value.ufValue;
 }
 
 // Llamar al caché de los bancos
-const { data: bancos } = await useFetch('/bancos/');
+const { data: bancos } = await useFetch('/proxy/bancos/');
 cachedBancos.value = bancos.value;
 
 // Función para obtener los créditos de un banco específico
@@ -66,7 +66,7 @@ const handleSubmit = async (formData) => {
   lowestCostCredits.value = null;
   
   try {
-    const response = await $fetch(`${API}?valorPropiedad=${formData.propertyValue}&Pie=${formData.downPayment}&Tiempo=${formData.term}&Dfl2=${formData.dfl2}`);
+    const response = await $fetch(`/proxy/bancos/?valorPropiedad=${formData.propertyValue}&Pie=${formData.downPayment}&Tiempo=${formData.term}&Dfl2=${formData.dfl2}`);
     credits.value = response;
 
     // Obtener los créditos de menor costo para cada banco
