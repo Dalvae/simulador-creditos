@@ -21,7 +21,7 @@ export default defineNuxtConfig({
   routeRules: {
     "/proxy/bancos": {
       proxy: "https://api.hipotecarios.info/creditos/",
-      prerender: true,
+      prerender: false,
       ssr: true,
       cors: true,
     },
