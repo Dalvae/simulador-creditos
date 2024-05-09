@@ -15,39 +15,32 @@ export function parsearBancos(Bancos: {
   [key: string]: BancoData[] | BancoData;
 }): Banco[] {
   const bancos: Banco[] = [];
-  const imagenPlaceholder = "https://via.placeholder.com/150";
+  // const imagenPlaceholder = "https://via.placeholder.com/150";
 
   for (const creditos in Bancos) {
     if (Array.isArray(Bancos[creditos])) {
-      // Iterar sobre los elementos del arreglo de atrás hacia adelante
+      //itera de manera inversa en los array de bancos, casi siempre estan al reves.
       for (let i = Bancos[creditos].length - 1; i >= 0; i--) {
         const elemento = Bancos[creditos][i];
-
-        // Verificar si el elemento tiene una propiedad "banco" y "banco.nombre"
         if (elemento.banco && elemento.banco.nombre) {
           const banco: Banco = {
             nombre: elemento.banco.nombre,
-            imagen: elemento.banco.imagen || imagenPlaceholder,
+            imagen: elemento.banco.imagen,
           };
-
-          // Buscar si el banco ya existe en el arreglo bancos
           const bancoExistente = bancos.find((b) => b.nombre === banco.nombre);
 
-          // Si el banco no existe, agregarlo al arreglo bancos
           if (!bancoExistente) {
             bancos.push(banco);
           }
         }
       }
     } else {
-      // caso: la propiedad es un objeto (no un arreglo)
       const elemento = Bancos[creditos];
 
-      // verificar si el elemento tiene una propiedad "banco" y "banco.nombre"
       if (elemento.banco && elemento.banco.nombre) {
         const banco: Banco = {
           nombre: elemento.banco.nombre,
-          imagen: elemento.banco.imagen || imagenPlaceholder,
+          imagen: elemento.banco.imagen,
         };
 
         const bancoExistente = bancos.find((b) => b.nombre === banco.nombre);
