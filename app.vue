@@ -5,16 +5,16 @@
       <Result v-if="monthlyDividend && requiredSalary" :monthlyDividend="monthlyDividend" :requiredSalary="requiredSalary" />
     </Transition>
 
-    <TransitionGroup v-if="showCards" name="card-transition" mode="out-in" tag="div" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      <Card v-for="(banco, index) in cachedBancos" :key="index" :banco="banco" :credit="getCreditsForBank(banco)" :loading="loading" />
+    <TransitionGroup v-if="showCards" name="card" mode="out-in" tag="div" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" appear>
+      <Card v-for="(banco, index) in cachedBancos" :key="index" :banco="banco" :credit="getCreditsForBank(banco)" :loading="loading" :style="{ transitionDelay: `${index * 100}ms` }" />
     </TransitionGroup>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue';
 import { useHead } from '@vueuse/head';
+import { getLowestCostCredit } from './utils/getLowestCostCredit';
 
-const API = useRuntimeConfig().public.API;
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
 const credits = ref(null);
@@ -86,26 +86,20 @@ const handleSubmit = async (formData) => {
     loading.value = false;
   }
 };
-// Esta función selecciona los créditos con menor costo total de cada banco
-const getLowestCostCredit = (bankCredits) => {
-  // Formatear el costo total
-  const formatCost = (costString) => {
-    return parseFloat(costString.replace(/[-\s]|UF/g, '').replace(/\./g, '').replace(',', '.'));
-  };
-
-  // Si hay más créditos por banco, es un array, buscar el crédito con el menor costo total
-  if (Array.isArray(bankCredits)) {
-    return bankCredits.reduce((lowestCostCredit, credit) => {
-      const creditCost = formatCost(credit.costoTotal);
-      const lowestCost = lowestCostCredit ? formatCost(lowestCostCredit.costoTotal) : Number.MAX_SAFE_INTEGER;
-      return creditCost < lowestCost ? { ...credit, formattedCostoTotal: creditCost } : lowestCostCredit;
-    }, null);
-  }
-
-  // Si bankCredits es un objeto individual y tiene la propiedad costoTotal, formatear su costo total
-  if (typeof bankCredits === 'object' && bankCredits !== null && 'costoTotal' in bankCredits) {
-    return { ...bankCredits, formattedCostoTotal: formatCost(bankCredits.costoTotal) };
-  }
-  return null;
-};
 </script>
+
+<style>
+.card-enter-active {
+  transition: all 0.5s ease;
+}
+
+.card-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.card-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
