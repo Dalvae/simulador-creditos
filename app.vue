@@ -36,18 +36,20 @@ useHead({
 });
 
 // Obtener el valor de la UF del día desde el servidor
-const { data } = await useFetch('/proxy/uf/');
+const { data } = await useFetch('/api/uf/');
 if (data.value && !data.value.error) {
   ufValue.value = data.value.ufValue;
 }
 
 // Llamar al caché de los bancos
-const { data: bancos } = await useFetch('/proxy/bancos/');
+const { data: bancos } = await useFetch('/api/bancos/');
 cachedBancos.value = bancos.value;
-
+console.log('cachedBancos:', cachedBancos.value);
 // Función para obtener los créditos de un banco específico
 const getCreditsForBank = (banco) => {
+  console.log('Banco:', banco.nombre);
   if (lowestCostCredits.value && lowestCostCredits.value[banco.nombre]) {
+    console.log('Crédito encontrado:', lowestCostCredits.value[banco.nombre]);
     return lowestCostCredits.value[banco.nombre];
   }
   return null;
@@ -68,7 +70,7 @@ const handleSubmit = async (formData) => {
   try {
     const response = await $fetch(`/proxy/bancos/?valorPropiedad=${formData.propertyValue}&Pie=${formData.downPayment}&Tiempo=${formData.term}&Dfl2=${formData.dfl2}`);
     credits.value = response;
-
+    console.log('Datos recibidos:', response);
     // Obtener los créditos de menor costo para cada banco
     lowestCostCredits.value = Object.values(response).reduce((acc, bankCredits) => {
       const lowestCostCredit = getLowestCostCredit(bankCredits);
@@ -77,6 +79,7 @@ const handleSubmit = async (formData) => {
       }
       return acc;
     }, {});
+    console.log('lowestCostCredits:', lowestCostCredits.value);
   } catch (error) {
     console.error('Error al obtener los datos de la API:', error);
   } finally {
