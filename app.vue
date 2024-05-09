@@ -36,13 +36,13 @@ useHead({
 });
 
 // Obtener el valor de la UF del día desde el servidor
-const { data } = await useFetch('/api/uf');
+const { data } = await useFetch('/uf/');
 if (data.value && !data.value.error) {
   ufValue.value = data.value.ufValue;
 }
 
 // Llamar al caché de los bancos
-const { data: bancos } = await useFetch('/api/bancos');
+const { data: bancos } = await useFetch('/bancos/');
 cachedBancos.value = bancos.value;
 
 // Función para obtener los créditos de un banco específico

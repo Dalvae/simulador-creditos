@@ -5,17 +5,19 @@ let cachedUpdatedAt: string | null = null;
 
 const getUfValue = async () => {
   try {
-    const response = await axios.get("https://mindicador.cl/api");
+    const config = useRuntimeConfig();
+    const baseURL = config.public.baseURL || "http://localhost:3000";
+
+    const response = await axios.get(`${baseURL}/proxy/uf`);
     const ufValue = response.data.uf.valor;
 
     if (!ufValue) {
-      throw new Error("no se pudo obtener el valor de la UF");
+      throw new Error("No se pudo obtener el valor de la UF");
     }
 
     cachedUfValue = ufValue;
     cachedUpdatedAt = new Date().toISOString();
-
-    console.log("UF del dia", ufValue);
+    console.log("UF del día", ufValue);
   } catch (error: unknown) {
     console.error("Error:", error);
   }
@@ -23,7 +25,7 @@ const getUfValue = async () => {
 
 getUfValue();
 
-// cada 24 horas
+// Cada 24 horas
 setInterval(() => {
   getUfValue();
 }, 24 * 60 * 60 * 1000);
