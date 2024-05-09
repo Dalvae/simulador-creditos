@@ -22,13 +22,13 @@ export default defineNuxtConfig({
     "/proxy/bancos": {
       proxy: "https://api.hipotecarios.info/creditos/",
       prerender: false,
-      ssr: true,
+      ssr: false,
       cors: true,
     },
     "/proxy/uf": {
       proxy: "https://mindicador.cl/api",
-      prerender: true,
-      ssr: true,
+      prerender: false,
+      ssr: false,
       cors: true,
     },
   },
