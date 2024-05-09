@@ -13,5 +13,6 @@ export default defineNuxtConfig({
       API: process.env.API,
     },
   },
+  modules: ["nuxt-scheduler"],
   // modules: ["@vueuse/head"],
 });
