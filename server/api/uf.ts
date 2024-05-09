@@ -1,5 +1,5 @@
 import axios from "axios";
-import { defineEventHandler, createError } from "h3";
+import { defineEventHandler } from "h3";
 
 let cachedUfValue: number | null = null;
 let cachedUpdatedAt: string | null = null;
