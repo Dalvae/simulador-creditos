@@ -8,7 +8,7 @@ const getUfValue = async () => {
   try {
     const config = useRuntimeConfig();
     const baseURL = config.public.baseURL || "http://localhost:3000";
-    const response = await axios.get(`${baseURL}/proxy/uf`, { timeout: 5000 });
+    const response = await axios.get(`${baseURL}/proxy/uf`);
     const ufValue = response.data.uf.valor;
 
     if (!ufValue) {
