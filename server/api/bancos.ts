@@ -18,27 +18,17 @@ const getDataBank = async () => {
   try {
     const config = useRuntimeConfig();
     const baseURL = config.public.baseURL || "http://localhost:3000";
-
-    const response = await axios.get(`${baseURL}/proxy/bancos?${queryParams}`);
+    const response = await axios.get(`${baseURL}/proxy/bancos?${queryParams}`, {
+      timeout: 5000,
+    });
     const banksData = response.data;
 
     // Procesar los datos para obtener los nombres y las imágenes de los bancos
     cachedBancos = parsearBancos(banksData);
     console.log("Datos de los bancos almacenados en caché:", cachedBancos);
-
-    // Invalidar la caché si contiene menos de 8 elementos (lo dejamos así por mientras)
-    // if (cachedBancos && cachedBancos.length < 8) {
-    //   console.log(
-    //     "Invalidando la caché debido a la cantidad insuficiente de datos."
-    //   );
-    //   cachedBancos = null;
-    // }
   } catch (error) {
     console.error("Error al obtener los datos de los bancos:", error);
-    throw createError({
-      statusCode: 500,
-      message: "Error al obtener los datos de los bancos",
-    });
+    cachedBancos = null;
   }
 };
 
@@ -55,10 +45,15 @@ actualizarDatosBancosDiariamente();
 
 export default defineEventHandler(async (event) => {
   if (!cachedBancos) {
+    await getDataBank();
+  }
+
+  if (!cachedBancos) {
     throw createError({
       statusCode: 500,
       message: "Los datos de los bancos aún no se han cargado",
     });
   }
+
   return cachedBancos;
 });

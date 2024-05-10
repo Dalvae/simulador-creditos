@@ -8,7 +8,7 @@ const getUfValue = async () => {
   try {
     const config = useRuntimeConfig();
     const baseURL = config.public.baseURL || "http://localhost:3000";
-    const response = await axios.get(`${baseURL}/proxy/uf`);
+    const response = await axios.get(`${baseURL}/proxy/uf`, { timeout: 5000 });
     const ufValue = response.data.uf.valor;
 
     if (!ufValue) {
@@ -17,10 +17,11 @@ const getUfValue = async () => {
 
     cachedUfValue = ufValue;
     cachedUpdatedAt = new Date().toISOString();
-
     console.log("UF del día", ufValue);
   } catch (error: unknown) {
-    console.error("Error:", error);
+    console.error("Error al obtener el valor de la UF:", error);
+    cachedUfValue = null;
+    cachedUpdatedAt = null;
   }
 };
 
@@ -37,6 +38,13 @@ actualizarUfDiario();
 export default defineEventHandler(async (event) => {
   if (!cachedUfValue || !cachedUpdatedAt) {
     await getUfValue();
+  }
+
+  if (!cachedUfValue || !cachedUpdatedAt) {
+    throw createError({
+      statusCode: 500,
+      message: "No se pudo obtener el valor de la UF",
+    });
   }
 
   return {
