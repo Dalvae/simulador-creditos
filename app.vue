@@ -2,12 +2,12 @@
   <div
     class="font-raleway "
   >
-    <div className="space-y-2 my-2 !important text-center">
-      <h1 className="text-3xl !important font-bold !important">Simula tu crédito</h1>
-      <p className="text-gray-500 ">
-        Rellena el formulario y obten los creditos mas combenientes
-      </p>
-    </div>
+  <div class="space-y-2 my-2 text-center">
+    <h1 class="text-3xl font-bold">Simula tu crédito</h1>
+    <p class="text-gray-500">
+      Rellena el formulario y obten los creditos mas convenientes
+    </p>
+  </div>
     <div class="mx-auto  space-y-6 flex lg:flex-row flex-col lg:space-x-8 ">
       <div class=" mx-[10%] md:m-0 flex flex-col  lg:top-4 lg:self-start md:w-2/3 lg:w-1/3 xl:w-1/4 2xl:w-1/5">
         <Form
