@@ -1,15 +1,13 @@
 <template>
-  <div
-    class="font-raleway "
-  >
-  <div class="space-y-2 my-2 text-center">
-    <h1 class="text-3xl font-bold">Simula tu crédito</h1>
-    <p class="text-gray-500">
-      Rellena el formulario y obten los creditos mas convenientes
-    </p>
-  </div>
-    <div class="mx-auto  space-y-6 flex lg:flex-row flex-col lg:space-x-8 ">
-      <div class=" mx-[10%] md:m-0 flex flex-col  lg:top-4 lg:self-start md:w-2/3 lg:w-1/3 xl:w-1/4 2xl:w-1/5">
+  <div class="font-raleway">
+    <div class="space-y-2 my-2 text-center">
+      <h1 class="text-3xl font-bold">Simula tu crédito</h1>
+      <p class="text-gray-500">
+        Rellena el formulario y obtén los créditos más convenientes
+      </p>
+    </div>
+    <div class="mx-auto space-y-6 flex lg:flex-row flex-col lg:space-x-8">
+      <div class="mx-[10%] md:m-0 flex flex-col lg:top-4 lg:self-start md:w-2/3 lg:w-1/3 xl:w-1/4 2xl:w-1/5">
         <Form
           @update-data="handleUpdateData"
           @submit="handleSubmit"
@@ -23,30 +21,29 @@
           />
         </Transition>
       </div>
-      
       <TransitionGroup
-        v-if="showCards"
-        name="card"
-        mode="out-in"
-        tag="div"
-        class="grid mx-[10%] md:mx-auto  grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 p-4  lg:w-2/3  "
-        appear
-      >
-        <Card
-          v-for="(banco, index) in cachedBancos"
-          :key="index"
-          :banco="banco"
-          :credit="getCreditsForBank(banco)"
-          :loading="loading"
-          :style="{ transitionDelay: `${index * 100}ms` }"
-        />
-      </TransitionGroup>
+      v-if="showCards"
+      name="card"
+      mode="out-in"
+      tag="div"
+      class="grid mx-[10%] md:mx-auto grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 p-4 lg:w-2/3"
+      appear
+    >
+      <Card
+        v-for="(banco, index) in displayedBancos"
+        :key="banco.nombre"
+        :banco="banco"
+        :credit="banco.credit"
+        :loading="loading"
+        :style="{ transitionDelay: `${index * 100}ms` }"
+      />
+    </TransitionGroup>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useHead } from "@vueuse/head";
 import { getLowestCostCredit } from "./utils/getLowestCostCredit";
 
@@ -81,15 +78,19 @@ if (data.value && !data.value.error) {
 const { data: bancos } = await useFetch("/api/bancos/");
 cachedBancos.value = bancos.value;
 console.log("cachedBancos:", cachedBancos.value);
+
 // Función para obtener los créditos de un banco específico
-const getCreditsForBank = (banco) => {
-  console.log("Banco:", banco.nombre);
-  if (lowestCostCredits.value && lowestCostCredits.value[banco.nombre]) {
-    console.log("Crédito encontrado:", lowestCostCredits.value[banco.nombre]);
-    return lowestCostCredits.value[banco.nombre];
+const displayedBancos = computed(() => {
+  if (lowestCostCredits.value) {
+    return cachedBancos.value
+      .map((banco) => {
+        const credit = lowestCostCredits.value[banco.nombre];
+        return credit ? { ...banco, credit } : null;
+      })
+      .filter((banco) => banco !== null);
   }
-  return null;
-};
+  return cachedBancos.value.map((banco) => ({ ...banco, credit: null }));
+});
 
 const handleUpdateData = (data) => {
   monthlyDividend.value = data.monthlyDividend;
