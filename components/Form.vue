@@ -1,32 +1,34 @@
 <template>
-  <div>
+  <div class="space-y-2 m-4">
     <form @submit.prevent="handleSubmit">
-      <div>
+      <div class="space-y-2">
         <label for="propertyValue">Valor Propiedad (UF):</label>
-        <input type="number" id="propertyValue" v-model.number="propertyValue" required>
+        <input type="number" id="propertyValue" v-model.number="propertyValue" required class="input-style">
       </div>
-      <div>
+      <div class="space-y-2">
         <label for="downPayment">Pie (UF):</label>
         <input type="number" id="downPayment" v-model.number="downPayment" required>
       </div>
-      <div>
+      <div class="space-y-2">
         <label for="interestRate">Tasa de Interés (%):</label>
         <input type="number" id="interestRate" v-model.number="interestRate" step="0.01" required>
       </div>
-      <div>
+      <div class="space-y-2"> 
         <label for="term">Plazo (años):</label>
-        <input type="number" id="term" v-model.number="term" required>
+        <select id="term" v-model.number="term" required>
+          <option v-for="option in termOptions" :value="option" :key="option">{{ option }}</option>
+        </select>
       </div>
-      <div>
+      <div class="space-y-2">
         <label for="dfl2">DFL2:</label>
         <select id="dfl2" v-model="dfl2">
           <option value="true">Sí</option>
           <option value="false">No</option>
         </select>
       </div>
-      <button type="submit">Calcular</button>
+      <button type="submit ">Calcular</button>
     </form>
-    <span>Uf de hoy {{formatCLP(ufValue)}}</span>
+    <span class="italic ">Uf de hoy {{formatCLP(ufValue)}}</span>
   </div>
 </template>
 
@@ -41,6 +43,7 @@ const interestRate = ref(5);
 const term = ref(null);
 const dfl2 = ref('true');
 
+const termOptions = [5, 10, 15, 20, 25, 30];
 // Dividendo mensual y salario requerido estas tienen ref porque son reactivas
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
@@ -89,3 +92,22 @@ const calculateMonthlyDividend = (propertyValue, downPayment, interestRate, term
 return null;
 };
 </script>
+
+<style>
+input[type=number] {
+  -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+select,
+input {
+  @apply flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ;
+}
+button {
+  @apply
+  inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-gray-950 dark:focus-visible:ring-gray-300 bg-gray-900 text-gray-50 hover:bg-gray-900/90 h-10 px-4 py-2 w-full mt-5;
+}
+</style>

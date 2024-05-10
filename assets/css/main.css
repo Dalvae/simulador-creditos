@@ -9,6 +9,7 @@
     font-style: normal;
   }
 
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.8s ease;

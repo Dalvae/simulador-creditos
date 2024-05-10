@@ -1,11 +1,22 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  modules: ["@nuxtjs/google-fonts"],
   css: ["~/assets/css/main.css"],
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
+    },
+  },
+  googleFonts: {
+    families: {
+      Roboto: true,
+      Raleway: {
+        wght: [100, 400, 700],
+        ital: [100],
+      },
+      Inter: "200..700",
+      Quicksand: "200..700",
     },
   },
   runtimeConfig: {

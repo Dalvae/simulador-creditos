@@ -1,19 +1,54 @@
 <template>
-  <div class="font-optinaval">
-    <Form @update-data="handleUpdateData" @submit="handleSubmit" :uf-value="ufValue" />
-    <Transition name="fade">
-      <Result v-if="monthlyDividend && requiredSalary" :monthlyDividend="monthlyDividend" :requiredSalary="requiredSalary" />
-    </Transition>
-
-    <TransitionGroup v-if="showCards" name="card" mode="out-in" tag="div" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" appear>
-      <Card v-for="(banco, index) in cachedBancos" :key="index" :banco="banco" :credit="getCreditsForBank(banco)" :loading="loading" :style="{ transitionDelay: `${index * 100}ms` }" />
-    </TransitionGroup>
+  <div
+    class="font-raleway "
+  >
+    <div className="space-y-2 my-2 !important text-center">
+      <h1 className="text-3xl !important font-bold !important">Simula tu crédito</h1>
+      <p className="text-gray-500 ">
+        Rellena el formulario y obten los creditos mas combenientes
+      </p>
+    </div>
+    <div class="mx-auto  space-y-6 flex lg:flex-row flex-col lg:space-x-8 ">
+      <div class=" mx-[10%] md:m-0 flex flex-col  lg:top-4 lg:self-start md:w-2/3 lg:w-1/3 xl:w-1/4 2xl:w-1/5">
+        <Form
+          @update-data="handleUpdateData"
+          @submit="handleSubmit"
+          :uf-value="ufValue"
+        />
+        <Transition name="fade">
+          <Result
+            v-if="monthlyDividend && requiredSalary"
+            :monthlyDividend="monthlyDividend"
+            :requiredSalary="requiredSalary"
+          />
+        </Transition>
+      </div>
+      
+      <TransitionGroup
+        v-if="showCards"
+        name="card"
+        mode="out-in"
+        tag="div"
+        class="grid mx-[10%] md:mx-auto  grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 p-4  lg:w-2/3  "
+        appear
+      >
+        <Card
+          v-for="(banco, index) in cachedBancos"
+          :key="index"
+          :banco="banco"
+          :credit="getCreditsForBank(banco)"
+          :loading="loading"
+          :style="{ transitionDelay: `${index * 100}ms` }"
+        />
+      </TransitionGroup>
+    </div>
   </div>
 </template>
+
 <script setup>
-import { ref } from 'vue';
-import { useHead } from '@vueuse/head';
-import { getLowestCostCredit } from './utils/getLowestCostCredit';
+import { ref } from "vue";
+import { useHead } from "@vueuse/head";
+import { getLowestCostCredit } from "./utils/getLowestCostCredit";
 
 const monthlyDividend = ref(null);
 const requiredSalary = ref(null);
@@ -26,30 +61,31 @@ const showCards = ref(false);
 
 // Configurar metadatos y descripción de la página
 useHead({
-  title: 'Simulador de Crédito Hipotecario',
+  title: "Simulador de Crédito Hipotecario",
   meta: [
     {
-      name: 'description',
-      content: 'Calcula tu dividendo mensual y compara opciones de crédito hipotecario.',
+      name: "description",
+      content:
+        "Calcula tu dividendo mensual y compara opciones de crédito hipotecario.",
     },
   ],
 });
 
 // Obtener el valor de la UF del día desde el servidor
-const { data } = await useFetch('/api/uf/');
+const { data } = await useFetch("/api/uf/");
 if (data.value && !data.value.error) {
   ufValue.value = data.value.ufValue;
 }
 
 // Llamar al caché de los bancos
-const { data: bancos } = await useFetch('/api/bancos/');
+const { data: bancos } = await useFetch("/api/bancos/");
 cachedBancos.value = bancos.value;
-console.log('cachedBancos:', cachedBancos.value);
+console.log("cachedBancos:", cachedBancos.value);
 // Función para obtener los créditos de un banco específico
 const getCreditsForBank = (banco) => {
-  console.log('Banco:', banco.nombre);
+  console.log("Banco:", banco.nombre);
   if (lowestCostCredits.value && lowestCostCredits.value[banco.nombre]) {
-    console.log('Crédito encontrado:', lowestCostCredits.value[banco.nombre]);
+    console.log("Crédito encontrado:", lowestCostCredits.value[banco.nombre]);
     return lowestCostCredits.value[banco.nombre];
   }
   return null;
@@ -66,22 +102,27 @@ const handleSubmit = async (formData) => {
   showCards.value = true;
   credits.value = [];
   lowestCostCredits.value = null;
-  
+
   try {
-    const response = await $fetch(`/proxy/bancos/?valorPropiedad=${formData.propertyValue}&Pie=${formData.downPayment}&Tiempo=${formData.term}&Dfl2=${formData.dfl2}`);
+    const response = await $fetch(
+      `/proxy/bancos/?valorPropiedad=${formData.propertyValue}&Pie=${formData.downPayment}&Tiempo=${formData.term}&Dfl2=${formData.dfl2}`
+    );
     credits.value = response;
-    console.log('Datos recibidos:', response);
+    console.log("Datos recibidos:", response);
     // Obtener los créditos de menor costo para cada banco
-    lowestCostCredits.value = Object.values(response).reduce((acc, bankCredits) => {
-      const lowestCostCredit = getLowestCostCredit(bankCredits);
-      if (lowestCostCredit) {
-        acc[lowestCostCredit.banco.nombre] = lowestCostCredit;
-      }
-      return acc;
-    }, {});
-    console.log('lowestCostCredits:', lowestCostCredits.value);
+    lowestCostCredits.value = Object.values(response).reduce(
+      (acc, bankCredits) => {
+        const lowestCostCredit = getLowestCostCredit(bankCredits);
+        if (lowestCostCredit) {
+          acc[lowestCostCredit.banco.nombre] = lowestCostCredit;
+        }
+        return acc;
+      },
+      {}
+    );
+    console.log("lowestCostCredits:", lowestCostCredits.value);
   } catch (error) {
-    console.error('Error al obtener los datos de la API:', error);
+    console.error("Error al obtener los datos de la API:", error);
   } finally {
     loading.value = false;
   }

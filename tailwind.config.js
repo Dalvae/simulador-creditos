@@ -12,6 +12,10 @@ export default {
     extend: {
       fontFamily: {
         optinaval: ["OPTINaval", "sans-serif"],
+        sans: ["Roboto", "sans-serif"],
+        raleway: ["Raleway", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+        quicksand: ["Quicksand", "sans-serif"],
       },
     },
   },
