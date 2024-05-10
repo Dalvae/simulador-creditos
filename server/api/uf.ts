@@ -18,7 +18,7 @@ const getUfValue = async () => {
     }
 
     cache.ufCache = {
-      value: ufValue,
+      ufValue: ufValue,
       updatedAt: new Date().toISOString(),
     };
 

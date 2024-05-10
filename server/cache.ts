@@ -2,7 +2,7 @@ import { Banco } from "../utils/parsearBancos";
 
 export const cache: {
   banksCache: Banco[] | null;
-  ufCache: { value: number; updatedAt: string } | null;
+  ufCache: { ufValue: number; updatedAt: string } | null;
 } = {
   banksCache: [
     {
@@ -56,7 +56,7 @@ export const cache: {
     },
   ],
   ufCache: {
-    value: 37312.63,
+    ufValue: 37312.63,
     updatedAt: new Date().toISOString(),
   },
 };
