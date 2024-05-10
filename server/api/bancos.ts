@@ -4,7 +4,6 @@ import axios from "axios";
 
 let cachedBancos: Banco[] | null = null;
 
-// Función para obtener los datos de los bancos y almacenarlos en caché
 const getDataBank = async () => {
   const query = {
     valorPropiedad: "4000",
@@ -21,9 +20,8 @@ const getDataBank = async () => {
     const response = await axios.get(`${baseURL}/proxy/bancos?${queryParams}`, {
       timeout: 5000,
     });
-    const banksData = response.data;
 
-    // Procesar los datos para obtener los nombres y las imágenes de los bancos
+    const banksData = response.data;
     cachedBancos = parsearBancos(banksData);
     console.log("Datos de los bancos almacenados en caché:", cachedBancos);
   } catch (error) {
@@ -32,14 +30,17 @@ const getDataBank = async () => {
   }
 };
 
-// Obtener los datos de los bancos al iniciar la aplicación
 getDataBank();
 
 export default defineEventHandler(async (event) => {
   if (!cachedBancos) {
+    await getDataBank();
+  }
+
+  if (!cachedBancos) {
     throw createError({
       statusCode: 500,
-      message: "Los datos de los bancos aún no se han cargado",
+      message: "No se pudieron obtener los datos de los bancos",
     });
   }
 
