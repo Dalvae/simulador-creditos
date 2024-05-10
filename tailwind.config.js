@@ -11,7 +11,6 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        optinaval: ["OPTINaval", "sans-serif"],
         sans: ["Roboto", "sans-serif"],
         raleway: ["Raleway", "sans-serif"],
         inter: ["Inter", "sans-serif"],
