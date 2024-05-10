@@ -35,10 +35,12 @@ const actualizarUfDiario = async () => {
 actualizarUfDiario();
 
 export default defineEventHandler(async (event) => {
-  if (cache.ufCache && cache.ufCache.updatedAt) {
-    return cache.ufCache;
+  if (!cache.ufCache) {
+    throw createError({
+      statusCode: 500,
+      message: "No se pudo obtener el valor de la UF",
+    });
   }
-
   await getUfValue();
 
   if (!cache.ufCache) {
