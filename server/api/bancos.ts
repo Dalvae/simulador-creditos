@@ -3,9 +3,11 @@ import { Banco } from "../../utils/parsearBancos";
 import axios from "axios";
 import { cache } from "../cache";
 
-let cachedBancos: Banco[] | null = null;
-
 const getDataBank = async () => {
+  if (cache.banksCache) {
+    return cache.banksCache;
+  }
+
   const query = {
     valorPropiedad: "4000",
     Pie: "300",
@@ -23,30 +25,25 @@ const getDataBank = async () => {
     });
 
     const banksData = response.data;
-    cachedBancos = parsearBancos(banksData);
+    const cachedBancos = parsearBancos(banksData);
     cache.banksCache = cachedBancos;
     console.log("Datos de los bancos almacenados en caché:", cachedBancos);
+    return cachedBancos;
   } catch (error) {
     console.error("Error al obtener los datos de los bancos:", error);
-    cachedBancos = null;
+    cache.banksCache = null;
+    throw error;
   }
 };
 
-getDataBank();
-
 export default defineEventHandler(async (event) => {
-  if (cache.banksCache) {
-    return cache.banksCache;
-  }
-
-  await getDataBank();
-
-  if (!cachedBancos) {
+  try {
+    const banksData = await getDataBank();
+    return banksData;
+  } catch (error) {
     throw createError({
       statusCode: 500,
       message: "No se pudieron obtener los datos de los bancos",
     });
   }
-
-  return cachedBancos;
 });
