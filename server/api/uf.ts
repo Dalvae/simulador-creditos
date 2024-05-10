@@ -33,13 +33,10 @@ const actualizarUfDiario = async () => {
   }, 24 * 60 * 60 * 1000);
 };
 
-actualizarUfDiario();
+// Obtener el valor de la UF al iniciar la aplicación
+getUfValue();
 
 export default defineEventHandler(async (event) => {
-  if (!cachedUfValue || !cachedUpdatedAt) {
-    await getUfValue();
-  }
-
   if (!cachedUfValue || !cachedUpdatedAt) {
     throw createError({
       statusCode: 500,

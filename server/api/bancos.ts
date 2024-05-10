@@ -32,22 +32,10 @@ const getDataBank = async () => {
   }
 };
 
-// Función para actualizar los datos de los bancos diariamente
-const actualizarDatosBancosDiariamente = async () => {
-  await getDataBank();
-  setInterval(async () => {
-    await getDataBank();
-  }, 24 * 60 * 60 * 1000);
-};
-
-// Obtener los datos de los bancos al iniciar la aplicación y luego actualizarlos diariamente
-actualizarDatosBancosDiariamente();
+// Obtener los datos de los bancos al iniciar la aplicación
+getDataBank();
 
 export default defineEventHandler(async (event) => {
-  if (!cachedBancos) {
-    await getDataBank();
-  }
-
   if (!cachedBancos) {
     throw createError({
       statusCode: 500,
