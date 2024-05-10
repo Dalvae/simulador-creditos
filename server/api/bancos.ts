@@ -1,6 +1,7 @@
 import { parsearBancos } from "../../utils/parsearBancos";
 import { Banco } from "../../utils/parsearBancos";
 import axios from "axios";
+import { cache } from "../cache";
 
 let cachedBancos: Banco[] | null = null;
 
@@ -23,6 +24,7 @@ const getDataBank = async () => {
 
     const banksData = response.data;
     cachedBancos = parsearBancos(banksData);
+    cache.banksCache = cachedBancos;
     console.log("Datos de los bancos almacenados en caché:", cachedBancos);
   } catch (error) {
     console.error("Error al obtener los datos de los bancos:", error);
@@ -33,9 +35,11 @@ const getDataBank = async () => {
 getDataBank();
 
 export default defineEventHandler(async (event) => {
-  if (!cachedBancos) {
-    await getDataBank();
+  if (cache.banksCache) {
+    return cache.banksCache;
   }
+
+  await getDataBank();
 
   if (!cachedBancos) {
     throw createError({

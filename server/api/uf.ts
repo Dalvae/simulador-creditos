@@ -1,27 +1,27 @@
 import axios from "axios";
 import { defineEventHandler } from "h3";
-
-let cachedUfValue: number | null = null;
-let cachedUpdatedAt: string | null = null;
+import { cache } from "../cache";
 
 const getUfValue = async () => {
   try {
     const config = useRuntimeConfig();
     const baseURL = config.public.baseURL || "http://localhost:3000";
     const response = await axios.get(`${baseURL}/proxy/uf`);
-
     const ufValue = response.data.uf.valor;
+
     if (!ufValue) {
       throw new Error("No se pudo obtener el valor de la UF");
     }
 
-    cachedUfValue = ufValue;
-    cachedUpdatedAt = new Date().toISOString();
+    cache.ufCache = {
+      value: ufValue,
+      updatedAt: new Date().toISOString(),
+    };
+
     console.log("UF del día", ufValue);
   } catch (error) {
     console.error("Error al obtener el valor de la UF:", error);
-    cachedUfValue = null;
-    cachedUpdatedAt = null;
+    cache.ufCache = null;
   }
 };
 
@@ -35,19 +35,18 @@ const actualizarUfDiario = async () => {
 actualizarUfDiario();
 
 export default defineEventHandler(async (event) => {
-  if (!cachedUfValue || !cachedUpdatedAt) {
-    await getUfValue();
+  if (cache.ufCache && cache.ufCache.updatedAt) {
+    return cache.ufCache;
   }
 
-  if (!cachedUfValue || !cachedUpdatedAt) {
+  await getUfValue();
+
+  if (!cache.ufCache) {
     throw createError({
       statusCode: 500,
       message: "No se pudo obtener el valor de la UF",
     });
   }
 
-  return {
-    ufValue: cachedUfValue,
-    updatedAt: cachedUpdatedAt,
-  };
+  return cache.ufCache;
 });
